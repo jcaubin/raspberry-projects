@@ -1,9 +1,11 @@
+
 import i2c_lib
 from time import *
 import sys
+import logging as log
 
 # LCD Address
-ADDRESS = 0x3f
+ADDRESS = 0x27
 
 # commands
 LCD_CLEARDISPLAY = 0x01
@@ -56,6 +58,7 @@ Rs = 0b00000001 # Register select bit
 class lcd:
    #initializes objects and lcd
    def __init__(self):
+      log.info('lcd init')
       self.lcd_device = i2c_lib.i2c_device(ADDRESS)
 
       self.lcd_write(0x03)
@@ -72,7 +75,7 @@ class lcd:
    # clocks EN to latch command
    def lcd_strobe(self, data):
       self.lcd_device.write_cmd(data | En | LCD_BACKLIGHT)
-      sleep(.0005)
+      sleep(.0010)
       self.lcd_device.write_cmd(((data & ~En) | LCD_BACKLIGHT))
 
    def lcd_write_four_bits(self, data):
@@ -86,6 +89,7 @@ class lcd:
 
    # put string function
    def lcd_display_string(self, string, line, mode = 0):
+      log.info(f'lcd display: {string}')
       if line == 1:
          self.lcd_write(0x80)
       if line == 2:
@@ -107,5 +111,6 @@ class lcd:
 
    # clear lcd and set to home
    def lcd_clear(self):
+      log.info('lcd clear')
       self.lcd_write(LCD_CLEARDISPLAY)
       self.lcd_write(LCD_RETURNHOME)
